@@ -4,17 +4,144 @@ import asyncio
 import websockets
 import time
 import random
+import sys
 
 
 
-COOKIE_VK = ""
-ID_VK = ""
 
-IP_ADDR_SERVER = ""
-LOGIN_MOONRAKER = ""
-PASSWORD_MOONRAKER = ""
 
-PROGRESS_PRC = 26
+def GetCookie_cfg():
+    Cfg_Handle = open("moonraker_vk.cfg")
+    
+    LineCfg = Cfg_Handle.readline()
+    
+    while LineCfg != "":
+        if "COOKIE_VK" in LineCfg:
+            Offset = LineCfg.find("COOKIE_VK") + len("COOKIE_VK")
+            
+            while LineCfg[Offset] != "=":
+                Offset += 1
+            
+            Offset += 1
+            while LineCfg[Offset] == " ":
+                Offset += 1
+            
+            Cfg_Handle.close()
+            return LineCfg[Offset:].strip()
+        
+        LineCfg = Cfg_Handle.readline()
+    Cfg_Handle.close()
+
+def GetID_VK_cfg():
+    Cfg_Handle = open("moonraker_vk.cfg")
+    
+    LineCfg = Cfg_Handle.readline()
+    
+    while LineCfg != "":
+        if "ID_VK" in LineCfg:
+            Offset = LineCfg.find("ID_VK") + len("ID_VK")
+            
+            while LineCfg[Offset] != "=":
+                Offset += 1
+            
+            Offset += 1
+            while LineCfg[Offset] == " ":
+                Offset += 1
+            
+            Cfg_Handle.close()
+            return LineCfg[Offset:].strip()
+        
+        LineCfg = Cfg_Handle.readline()
+    Cfg_Handle.close()
+    
+def GetIP_ADDR_SERVER_Tera():
+    Cfg_Handle = open("moonraker_vk.cfg")
+    
+    LineCfg = Cfg_Handle.readline()
+    
+    while LineCfg != "":
+        if "IP_ADDR_SERVER" in LineCfg:
+            Offset = LineCfg.find("IP_ADDR_SERVER") + len("IP_ADDR_SERVER")
+            
+            while LineCfg[Offset] != "=":
+                Offset += 1
+            
+            Offset += 1
+            while LineCfg[Offset] == " ":
+                Offset += 1
+            
+            Cfg_Handle.close()
+            return LineCfg[Offset:].strip()
+        
+        LineCfg = Cfg_Handle.readline()
+    Cfg_Handle.close()
+
+def GetLogin_Moonraker():
+    Cfg_Handle = open("moonraker_vk.cfg")
+    
+    LineCfg = Cfg_Handle.readline()
+    
+    while LineCfg != "":
+        if "LOGIN_MOONRAKER" in LineCfg:
+            Offset = LineCfg.find("LOGIN_MOONRAKER") + len("LOGIN_MOONRAKER")
+            
+            while LineCfg[Offset] != "=":
+                Offset += 1
+            
+            Offset += 1
+            while LineCfg[Offset] == " ":
+                Offset += 1
+            
+            Cfg_Handle.close()
+            return LineCfg[Offset:].strip()
+        
+        LineCfg = Cfg_Handle.readline()
+    Cfg_Handle.close()
+    
+def GetPassword_Moonraker():
+    Cfg_Handle = open("moonraker_vk.cfg")
+    
+    LineCfg = Cfg_Handle.readline()
+    
+    while LineCfg != "":
+        if "PASSWORD_MOONRAKER" in LineCfg:
+            Offset = LineCfg.find("PASSWORD_MOONRAKER") + len("PASSWORD_MOONRAKER")
+            
+            while LineCfg[Offset] != "=":
+                Offset += 1
+            
+            Offset += 1
+            while LineCfg[Offset] == " ":
+                Offset += 1
+            
+            Cfg_Handle.close()
+            return LineCfg[Offset:].strip()
+        
+        LineCfg = Cfg_Handle.readline()
+    Cfg_Handle.close()
+ 
+def GetProgress_BarPRC():
+    Cfg_Handle = open("moonraker_vk.cfg")
+    
+    LineCfg = Cfg_Handle.readline()
+    
+    while LineCfg != "":
+        if "PROGRESS_PRC" in LineCfg:
+            Offset = LineCfg.find("PROGRESS_PRC") + len("PROGRESS_PRC")
+            
+            while LineCfg[Offset] != "=":
+                Offset += 1
+            
+            Offset += 1
+            while LineCfg[Offset] == " ":
+                Offset += 1
+            
+            Cfg_Handle.close()
+            return int(LineCfg[Offset:].strip())
+        
+        LineCfg = Cfg_Handle.readline()
+    Cfg_Handle.close()
+
 
 
 
@@ -36,17 +163,21 @@ def parse_cookie_string(cookie):
 HEADERS_BROWSER = {"origin": "https://vk.com", "pragma": "no-cache", "priority": "u=1, i", "referer": "https://vk.com/", "sec-ch-ua": '''"Not(A:Brand";v="8", "Chromium";v="144"?"YaBrowser";v="26.3", "Yowser";v="2.5"''', "sec-ch-ua-mobile": "?0", "sec-ch-ua-platform": '"Windows"', "sec-fetch-dest": "empty", "sec-fetch-mode": "cors", "sec-fetch-site": "same-site", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 YaBrowser/26.3.0.0 Safari/537.36"}
 
 
-COOKIE = parse_cookie_string(COOKIE_VK)
+
 
 def GetToken_VK():
-    JsonVK = json.loads(requests.post("https://login.vk.com/?act=web_token", data = {"version": "1", "app_id": "6287487", "access_token": "vk1.a.BtvLVu0gcI9eLmH4Masxbf3PeQ0ahFoIBr3yRtM1OTHEHRfZNNikW9uAM5kqKSI8PAIWL0ucneXKAILdRFDMn_KB1aDuH1TzkJEfjRnA_Q5tXk_3Pi0nzdLTvIMz32NKDSGCYVKvD60sPv3r73wySjevm_hRHmSu-CsQsR6HbYCBn7blkV7D8-tFttXcKMr976b_pLyOoSVXPQz2grbeRw"}, headers = HEADERS_BROWSER, cookies = COOKIE, ).text)
+    JsonVK = json.loads(requests.post("https://login.vk.com/?act=web_token", data = {"version": "1", "app_id": "6287487", "access_token": "null"}, headers = HEADERS_BROWSER, cookies = parse_cookie_string(GetCookie_cfg()), ).text)
     
+    if "error_info" in JsonVK:
+        print("[-] ОШИБКА ПОЛУЧЕНИЯ ТОКЕНА API: ", JsonVK["error_info"])
+        sys.exit()
+        
     return JsonVK["data"]["access_token"]
 
 def VkBot_Init():
     TokenVK = GetToken_VK()
     
-    API_VK_INIT = requests.post("https://api.vk.com/method/messages.send?v=5.274&client_id=6287487", data = {"peer_id": ID_VK, "random_id": str(random.randint(-124443543, 3255334523)), "message": "___INIT___", "entrypoint": "popular_suggestions", "group_id": 0, "from": "reforged", "access_token": TokenVK}, headers = HEADERS_BROWSER).text
+    API_VK_INIT = requests.post("https://api.vk.com/method/messages.send?v=5.274&client_id=6287487", data = {"peer_id": GetID_VK_cfg(), "random_id": str(random.randint(-124443543, 3255334523)), "message": "___INIT___", "entrypoint": "popular_suggestions", "group_id": 0, "from": "reforged", "access_token": TokenVK}, headers = HEADERS_BROWSER).text
     
     ResponseJson = json.loads(API_VK_INIT)
     
@@ -60,7 +191,7 @@ def VkBot_Init():
 def VkBot_Sender(MessageText, cmid_message):
     TokenVK = GetToken_VK()
 
-    API_VK_RESP = requests.post("https://api.vk.com/method/messages.edit?v=5.274&client_id=6287487", data = {"cmid": cmid_message, "peer_id": ID_VK, "message": MessageText, "group_id": "0", "keep_forward_messages": "0", "keep_snippets": "0", "access_token": GetToken_VK()}, headers = HEADERS_BROWSER).text
+    API_VK_RESP = requests.post("https://api.vk.com/method/messages.edit?v=5.274&client_id=6287487", data = {"cmid": cmid_message, "peer_id": GetID_VK_cfg(), "message": MessageText, "group_id": "0", "keep_forward_messages": "0", "keep_snippets": "0", "access_token": GetToken_VK()}, headers = HEADERS_BROWSER).text
     
     print("[+] VK_API: отправлено\r\n\r\n")
 
@@ -68,14 +199,13 @@ ID_MESSAGE_LAST = -1
 
 
 async def VkBot_Commands(DescWB_Socket):
-    global ID_VK
     global ID_MESSAGE_LAST
 
     
     
     TokenVK = GetToken_VK()
     
-    API_VK_HISTORY_MESSAGE = requests.post("https://api.vk.com/method/messages.getHistory?v=5.274&client_id=6287487", data = {"peer_id": ID_VK, "start_message_id": "-1", "count": "1", "offset": "0", "extended": "0", "group_id": "0", "fwd_extended": "0", "fields": "id", "access_token": TokenVK}, headers = HEADERS_BROWSER).text
+    API_VK_HISTORY_MESSAGE = requests.post("https://api.vk.com/method/messages.getHistory?v=5.274&client_id=6287487", data = {"peer_id": GetID_VK_cfg(), "start_message_id": "-1", "count": "1", "offset": "0", "extended": "0", "group_id": "0", "fwd_extended": "0", "fields": "id", "access_token": TokenVK}, headers = HEADERS_BROWSER).text
     JsonHist = json.loads(API_VK_HISTORY_MESSAGE)
     
     if len(JsonHist["response"]["items"]) == 0:
@@ -100,13 +230,13 @@ async def VkBot_Commands(DescWB_Socket):
 
 #################################################
 def GetAuthBearer_Token():
-    Auth_Data = requests.post(f"http://{IP_ADDR_SERVER}/access/login", data = {"username": LOGIN_MOONRAKER,"password": PASSWORD_MOONRAKER,"source":"moonraker"}).text
+    Auth_Data = requests.post(f"http://{GetIP_ADDR_SERVER_Tera()}/access/login", data = {"username": GetLogin_Moonraker(),"password": GetPassword_Moonraker(),"source":"moonraker"}).text
     AuthJson = json.loads(Auth_Data)
     
     return AuthJson["result"]["token"]
 
 def Get_WebSocket_Token():
-    TokenWeb_SOCKET = requests.get(f"http://{IP_ADDR_SERVER}/access/oneshot_token", headers = {"Authorization": f"Bearer {GetAuthBearer_Token()}"}).text
+    TokenWeb_SOCKET = requests.get(f"http://{GetIP_ADDR_SERVER_Tera()}/access/oneshot_token", headers = {"Authorization": f"Bearer {GetAuthBearer_Token()}"}).text
     JsonConv = json.loads(TokenWeb_SOCKET)
     
     return JsonConv["result"]
@@ -178,7 +308,7 @@ async def Info_TeraPrinter():
     TokenWeb_Socket = Get_WebSocket_Token()
     print(f"[+] СОЕДИНЕНИЕ С СЕРВЕРОМ... \r\nТокен: {TokenWeb_Socket}\r\n\r\n")
     
-    async for WebSocket_Tera in websockets.connect(f"ws://{IP_ADDR_SERVER}/websocket?token={TokenWeb_Socket}"):
+    async for WebSocket_Tera in websockets.connect(f"ws://{GetIP_ADDR_SERVER_Tera()}/websocket?token={TokenWeb_Socket}"):
         print("[] СОЕДИНЕНИЕ УСТАНОВЛЕНО\r\n\r\n\r\n")
         await WebSocket_Tera.send(r"""{"id":10020,"method":"printer.objects.subscribe","jsonrpc":"2.0","params":{"objects":{"gcode":null,"webhooks":null,"configfile":null,"mcu":null,"pause_resume":null,"filament_switch_sensor filament_detection":null,"output_pin caselight":null,"output_pin _Zummer":null,"gcode_macro beep":null,"gcode_macro endprintbeep":null,"gcode_macro startprintbeep":null,"heaters":null,"heater_bed":null,"stepper_enable":null,"controller_fan mcu":null,"fan":null,"heater_fan nozzle_fan":null,"temperature_host Raspbery_Pi":null,"temperature_sensor Raspbery_Pi":null,"temperature_sensor mcu_temp":null,"firmware_retraction":null,"gcode_move":null,"exclude_object":null,"bed_screws":null,"print_stats":null,"virtual_sdcard":null,"display_status":null,"gcode_macro PAUSE":null,"gcode_macro RESUME":null,"gcode_macro CANCEL_PRINT":null,"gcode_macro PID_E":null,"gcode_macro PID_B":null,"gcode_macro Parking":null,"gcode_macro SWAP_FILAMENT":null,"query_endstops":null,"motion_report":null,"toolhead":null,"extruder":null,"idle_timeout":null,"system_stats":null,"manual_probe":null}}}""".encode())
         while True:
@@ -191,7 +321,7 @@ async def Info_TeraPrinter():
                 print(f"[*] Температура стола: {Heater_Bed_Temperature[0]}\r\n[*] Температура сопла: {Extruder_Temperature[0]}\r\n[*] Прогресс: {Progress[0]}%\r\n")
                 
                 
-                ProgressBar = "[" + ("█" * int((ProgressInt / 100) * PROGRESS_PRC)) + ("░" * int(26 - (ProgressInt / 100) * PROGRESS_PRC)) + "]"
+                ProgressBar = "[" + ("█" * int((ProgressInt / 100) * GetProgress_BarPRC())) + ("░" * int(26 - (ProgressInt / 100) * GetProgress_BarPRC())) + "]"
 
                 if time.time() >= EndTime_ExecuteVK:
                     VkBot_Sender(f"Температура стола: {Heater_Bed_Temperature[0]}\r\nТемпература сопла: {Extruder_Temperature[0]}\r\nПрогресс: {Progress[0]}%\r\n{ProgressBar}", ID_MESSAGE_BOT)
@@ -209,7 +339,7 @@ async def Info_TeraPrinter():
                 
             except websockets.ConnectionClosed:
                 TokenWeb_Socket = Get_WebSocket_Token()
-                WebSocket_Tera = websockets.connect(f"ws://{IP_ADDR_SERVER}/websocket?token={TokenWeb_Socket}")
+                WebSocket_Tera = websockets.connect(f"ws://{GetIP_ADDR_SERVER_Tera()}/websocket?token={TokenWeb_Socket}")
                 continue
 
 ############################################################## Асинхронная часть для получения показателей с сервера принтера Tera
