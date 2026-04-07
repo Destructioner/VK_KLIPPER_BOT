@@ -11,7 +11,7 @@ import sys
 
 
 def GetPARAM_CFG(Param_name):
-    Cfg_Handle = open("moonraker_vk.cfg")
+    Cfg_Handle = open("moonraker_vk.cfg", "r")
     
     LineCfg = Cfg_Handle.readline()
     
