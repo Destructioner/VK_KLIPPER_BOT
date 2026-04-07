@@ -137,7 +137,7 @@ async def VkBot_Commands(DescWB_Socket):
         
     if "/SVC_TIME" in JsonHist["response"]["items"][0]["text"]:
         TimeGet = JsonHist["response"]["items"][0]["text"].split(" ")[1]
-        EditPARAM_CFG("SVC_TIME", TimeGet + f":{str(time.localtime().tm_day)}")
+        EditPARAM_CFG("SVC_TIME", TimeGet)
         
         
         
