@@ -263,25 +263,25 @@ async def Info_TeraPrinter():
                     JsonJob_Status = await WebSocket_Tera.recv()
                     JsonConvert = json.loads(JsonJob_Status)
                     
-                    if "queue_state" in JsonConvert:
-                        if JsonConvert["queue_state"] == "paused":
-                            TimeCfg = GetPARAM_CFG("SVC_TIME").split(":")
                     
-                            GetHour_Cfg = int(TimeCfg[0])
-                            GetMin_Cfg = int(TimeCfg[1])
-                            GetDay_Cfg = int(TimeCfg[2])
+                    if JsonConvert.get("result") is not None:
+                        if JsonConvert.get("queue_state") is not None:
+                            if JsonConvert["result"]["queue_state"] == "paused":
+                                TimeCfg = GetPARAM_CFG("SVC_TIME").split(":")
+                        
+                                GetHour_Cfg = int(TimeCfg[0])
+                                GetMin_Cfg = int(TimeCfg[1])
                     
-                            TimeTup = time.local_time()
-                    
-                    
-                            if TimeTup.tm_hour == GetHour_Cfg:
-                                if TimeTup.tm_min == GetMin_Cfg:
-                                    print("\r\n\r\n[=] ВРЕМЯ {GetHour_Cfg}:{GetMin_Cfg} | ЗАПУСК ОЧЕРЕДИ ПЕЧАТИ")
-                                    await WebSocket_Tera.send(r'{"jsonrpc": "2.0","method":"server.job_queue.start","id":4654}'.encode())
-                                    VkBot_Sender(f"ВРЕМЯ {GetHour_Cfg}:{GetMin_Cfg} | ЗАПУСК ОЧЕРЕДИ ПЕЧАТИ", ID_MESSAGE_BOT)
-                                
+
+                                TimeTup = time.localtime()
                             
-                            
+                    
+                                if TimeTup.tm_hour == GetHour_Cfg:
+                                    if TimeTup.tm_min == GetMin_Cfg:
+                                        print("\r\n\r\n[=] ВРЕМЯ {GetHour_Cfg}:{GetMin_Cfg} | ЗАПУСК ОЧЕРЕДИ ПЕЧАТИ")
+                                        await WebSocket_Tera.send(r'{"jsonrpc": "2.0","method":"server.job_queue.start","id":4654}'.encode())
+                                        VkBot_Sender(f"ВРЕМЯ {GetHour_Cfg}:{GetMin_Cfg} | ЗАПУСК ОЧЕРЕДИ ПЕЧАТИ", ID_MESSAGE_BOT)
+
                     
                 
                 
