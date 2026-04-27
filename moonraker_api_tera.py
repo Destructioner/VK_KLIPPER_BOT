@@ -1,5 +1,4 @@
 import aiohttp
-import json
 import asyncio
 import sys
 
@@ -12,9 +11,11 @@ class TeraMoonrakerClient:
         self.__DEBUG_MODE = DEBUG_MODE
         self.__cfg_name = ""
         self.__WB_API_MOONRAKER = None
-        self.__MoonrakerSess = aiohttp.ClientSession()
-        self.__MoonrakerWebSocket = aiohttp.ClientSession()
+        self.__MoonrakerSess = aiohttp.ClientSession(connector = aiohttp.TCPConnector(ssl=False))
+        self.__MoonrakerWebSocket = aiohttp.ClientSession(connector = aiohttp.TCPConnector(ssl=False))
+        self.__MoonrakerStream = aiohttp.ClientSession(connector = aiohttp.TCPConnector(ssl=False))
         
+        self.__FRAME_JPEG = b""
         self.__IP_SERVER_MOONRAKER = ""
         self.__LOGIN_MOONRAKER = ""
         self.__PASSWORD_MOONRAKER = ""
@@ -57,8 +58,12 @@ class TeraMoonrakerClient:
             
         with open(self.__cfg_name, "w") as CfgEdit:
             CfgEdit.write(DataCfg.replace(Param_name + " = " + GetTemp_Value, Param_name + " = " + ValueParam))
-    
-    
+       
+        
+        
+        
+        
+            
     async def _GetAuthBearer_Token(self):
         Auth_Data = await self.__MoonrakerSess.post(f"http://{self.__IP_SERVER_MOONRAKER}/access/login", data = {"username": self.__LOGIN_MOONRAKER, "password": self.__PASSWORD_MOONRAKER,"source":"moonraker"})
         
@@ -142,19 +147,27 @@ class TeraMoonrakerClient:
         except:
             return None
         
-    async def update_metrics(self):
+    async def update(self):
         if self.__WB_API_MOONRAKER is not None:
 
             try:
                 WebSocket_DataJson = await self.__WB_API_MOONRAKER.receive_json()
 
                 Data_Printer = self._parse_data(WebSocket_DataJson)
-
                 if self.__DEBUG_MODE == 1: print(f"DEBUG Температура стола: {self.__Heater_Bed_Temperature}\r\n[*] Температура сопла: {self.__Extruder_Temperature}\r\n[*] Прогресс: {self.__Progress}%\r\n")
 
-            except aiohttp.ClientConnectionClosedError:
+            except aiohttp.client_exceptions.ClientConnectionResetError:
                 self.__WB_API_MOONRAKER = await self.__MoonrakerWebSocket.ws_connect(f"ws://{self.__IP_SERVER_MOONRAKER}/websocket?token={await self._Get_WebSocket_Token()}")
-                
+        
+        FrameCAMERA = await self.__MoonrakerStream.get(f"http://{self.__IP_SERVER_MOONRAKER}/webcam/?action=snapshot")
+        
+        self.__FRAME_JPEG = await FrameCAMERA.content.read()
+
+        
+
+
+        
+        
     def GetTemp_Extruder(self):
         return self.__Extruder_Temperature
         
@@ -163,6 +176,9 @@ class TeraMoonrakerClient:
         
     def GetProgress(self):
         return self.__Progress
+        
+    def GetFrame_Camera(self):
+        return self.__FRAME_JPEG
         
     def SetName_Cfg(self, name_cfg):
         self.__cfg_name = name_cfg
